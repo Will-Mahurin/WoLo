@@ -18,6 +18,7 @@ public class WoLo {
 	{
 		if(args.length != 3) {
 			System.out.println("Usage: WoLo addDateStamps <Start Date> <End Date>");
+			System.out.println("Dates formatted as \"" + WorkLog.dateStampFormat + "\".");
 			return;
 		}
 		WorkLog logger = new WorkLog();
@@ -28,6 +29,7 @@ public class WoLo {
 	{
 		if(args.length != 3) {
 			System.out.println("Usage: WoLo addToday <Start Time> <End Time>");
+			System.out.println("Time formatted as \"" + WorkLog.timeStampFormat + "\".");
 			return;
 		}
 		WorkLog logger = new WorkLog();

@@ -10,15 +10,18 @@ import java.io.File;
 /**
  * Backend (I think that's what this counts as) to WoLo worklogging program.
  * @author Will Mahurin
- * @version indev 5.11.26
+ * @version indev 6.11.26
  */
 public class WorkLog
 {
 	// Fields.
 	// File contruct of the log file.
-	File logFile;
-	// Integer sum of the total time spent working TODO: Duration units? Seconds? Miliseconds?
-	int totalDuration;
+	private File logFile;
+	// Integer sum of the total time spent working TODO: Duration implementation and units?
+	private int totalDuration; 
+	// Consistent reference formats for times and dates.
+	public static final String timeStampFormat = "h:m a";
+	public static final String dateStampFormat = "h:m a, d MMM yy";
 
 	/**
 	 * Check the default file if non is given.
@@ -48,8 +51,9 @@ public class WorkLog
 	 */
 	public void addToday(String startTime, String endTime)
 	{
-		SimpleDateFormat dateParser = new SimpleDateFormat("h:m a");
+		SimpleDateFormat dateParser = new SimpleDateFormat(timeStampFormat);
 		try {
+			// TODO: These dates are on the epoch, set them to the current one.
 			Date startStamp = dateParser.parse(startTime);
 			Date endStamp = dateParser.parse(endTime);
 			if(endStamp.before(startStamp) ) {
@@ -60,6 +64,7 @@ public class WorkLog
 			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
+			System.out.printf("Date format is \"%s\".", dateStampFormat);
 			e.printStackTrace();
 			return;
 		}
@@ -73,8 +78,7 @@ public class WorkLog
 	 */
 	public void addDateStamps(String startTime, String endTime)
 	{
-		// TODO: Learn to WRITE CSV files.
-		SimpleDateFormat dateParser = new SimpleDateFormat("h:m a, d MMM yy");
+		SimpleDateFormat dateParser = new SimpleDateFormat(dateStampFormat);
 		try {
 			Date startStamp = dateParser.parse(startTime);
 			Date endStamp = dateParser.parse(endTime);
@@ -83,6 +87,7 @@ public class WorkLog
 			
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
+			System.out.printf("Time format is \"%s\".", timeStampFormat);
 			e.printStackTrace();
 			return;
 		}
@@ -92,6 +97,7 @@ public class WorkLog
 	public void startTimer()
 	{
 		// TODO: Figure out how to log indefinite real time.
+		// Probably timestamps.
 	}
 
 	public void endTimer()
@@ -129,7 +135,7 @@ public class WorkLog
 			System.out.printf("File %s is not writable.%n", file.getName() );
 			return;
 		}
-		try(PrintWriter writer = new PrintWriter(new FileWriter(file, true) ) ) {
+		try(PrintWriter writer = new PrintWriter(new FileWriter(file, true) ) ) { // Need this `true` to append.
 			System.out.printf("This should be appending %s to %s.%n", words, file.getName() );
 			writer.append(words + "\n");
 		} catch(IOException e) {
