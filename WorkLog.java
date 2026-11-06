@@ -64,7 +64,7 @@ public class WorkLog
 			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
-			System.out.printf("Date format is \"%s\".", dateStampFormat);
+			System.out.printf("Date format is \"%s\".%n", dateStampFormat);
 			e.printStackTrace();
 			return;
 		}
@@ -87,7 +87,7 @@ public class WorkLog
 			
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
-			System.out.printf("Time format is \"%s\".", timeStampFormat);
+			System.out.printf("Time format is \"%s\".%n", timeStampFormat);
 			e.printStackTrace();
 			return;
 		}
@@ -115,7 +115,7 @@ public class WorkLog
 		try(PrintWriter writer = new PrintWriter(new FileWriter(file) ) ){
 			writer.println("Start time,End time,Duration");
 		} catch(IOException e) {
-			System.out.printf("Failed to write to file: \"%s\".", file.getName() );
+			System.out.printf("Failed to write to file: \"%s\".%n", file.getName() );
 			e.printStackTrace();
 		}
 	}
@@ -139,7 +139,7 @@ public class WorkLog
 			System.out.printf("This should be appending %s to %s.%n", words, file.getName() );
 			writer.append(words + "\n");
 		} catch(IOException e) {
-			System.out.printf("Failed to write to file: \"%s\".", file.getName() );
+			System.out.printf("Failed to write to file: \"%s\".%n", file.getName() );
 		}
 	}
 }
