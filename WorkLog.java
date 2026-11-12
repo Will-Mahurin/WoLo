@@ -4,7 +4,12 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.format.TextStyle;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
+import java.util.Locale;
 
 // TODO: Swap from Dates to something else, their support is really weird. Maybe Calendar?
 
@@ -21,11 +26,17 @@ public class WorkLog
 	// Integer sum of the total time spent working TODO: Duration implementation and units?
 	private int totalDuration; 
 	// Consistent reference formats for times and dates.
+	/**
+	 * Consistent format for input times. Follows "h:m a" e.g. "6:30 pm"
+	 */
 	public static final String TIMEFORMAT = "h:m a";
-	public static final String DATEFORMAT = "h:m a, d MMM yy";
+	/**
+	 * Consistent format for input dates. Follows "h:m a, d MMM yyyy" e.g. "6:30 pm, 5 Nov 2026"
+	 */
+	public static final String DATEFORMAT = "h:m a, d MMM yyyy";
 
 	/**
-	 * Check the default file if non is given.
+	 * Check the default file if not is given.
 	 */
 	public WorkLog() 
 	{
@@ -34,6 +45,7 @@ public class WorkLog
 
 	/**
 	 * Constructor for a WorkLog object with a specific file.
+	 * @param filepath The path of the file to be used as a log. Can be relative or absolute.
 	 */
 	public WorkLog(String filepath)
 	{
@@ -53,18 +65,22 @@ public class WorkLog
 	public void addToday(String startTime, String endTime)
 	{
 		SimpleDateFormat dateParser = new SimpleDateFormat(TIMEFORMAT);
+		LocalDate today = LocalDate.now();
+		startTime += today.getDayOfMonth() + today.getMonth().getDisplayName(TextStyle.SHORT, Locale.US) + 
+			today.getYear();
 		try {
 			// TODO: These dates are on the epoch, set them to the current one.
-			Date startStamp = dateParser.parse(startTime);
-			Date endStamp = dateParser.parse(endTime);
-			if(endStamp.before(startStamp) ) {
+			Instant startStamp = dateParser.parse(startTime).toInstant();
+			Instant endStamp = dateParser.parse(endTime).toInstant();
+			if(endStamp.isBefore(startStamp) ) {
 				System.out.println("I need to learn how to set the date back a day!");
 				//TODO: Learn to set the date back a day.
 			}
-			long duration = endStamp.getTime() - startStamp.getTime();
+			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
 			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
 		} catch(ParseException e) {
-			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
+			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
+					startTime, endTime);
 			System.out.printf("Time format is \"%s\".%n", TIMEFORMAT);
 			e.printStackTrace();
 			return;
@@ -73,21 +89,22 @@ public class WorkLog
 
 	/**
 	 * Add a work session to the log with a start and end time.
-	 * Both timestamps follow format "h:m a, d MMM yy". i.e. "6:30 pm, 5 Nov 26".
-	 * @param startTime The time that the work session started.
-	 * @param endTime The time that the work session ended.
+	 * Both timestamps follow the format of the public DATEFORMAT constant.
+	 * @param startDate The time that the work session started.
+	 * @param endDate The time that the work session ended.
 	 */
-	public void addDateStamps(String startTime, String endTime)
+	public void addDateStamps(String startDate, String endDate)
 	{
 		SimpleDateFormat dateParser = new SimpleDateFormat(DATEFORMAT);
 		try {
-			Date startStamp = dateParser.parse(startTime);
-			Date endStamp = dateParser.parse(endTime);
+			Date startStamp = dateParser.parse(startDate);
+			Date endStamp = dateParser.parse(endDate);
 			long duration = endStamp.getTime() - startStamp.getTime();
 			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
 			
 		} catch(ParseException e) {
-			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
+			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
+					startDate, endDate);
 			System.out.printf("Date format is \"%s\".%n", DATEFORMAT);
 			e.printStackTrace();
 			return;
