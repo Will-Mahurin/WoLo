@@ -1,16 +1,17 @@
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.io.File;
+
 // TODO: Swap from Dates to something else, their support is really weird. Maybe Calendar?
 
 /**
  * Backend (I think that's what this counts as) to WoLo worklogging program.
  * @author Will Mahurin
- * @version indev 6.11.26
+ * @version indev 26.11.11
  */
 public class WorkLog
 {
@@ -20,15 +21,15 @@ public class WorkLog
 	// Integer sum of the total time spent working TODO: Duration implementation and units?
 	private int totalDuration; 
 	// Consistent reference formats for times and dates.
-	public static final String timeStampFormat = "h:m a";
-	public static final String dateStampFormat = "h:m a, d MMM yy";
+	public static final String TIMEFORMAT = "h:m a";
+	public static final String DATEFORMAT = "h:m a, d MMM yy";
 
 	/**
 	 * Check the default file if non is given.
 	 */
 	public WorkLog() 
 	{
-		this("./WorkLog.csv");
+		this("./log-file.csv");
 	}
 
 	/**
@@ -51,7 +52,7 @@ public class WorkLog
 	 */
 	public void addToday(String startTime, String endTime)
 	{
-		SimpleDateFormat dateParser = new SimpleDateFormat(timeStampFormat);
+		SimpleDateFormat dateParser = new SimpleDateFormat(TIMEFORMAT);
 		try {
 			// TODO: These dates are on the epoch, set them to the current one.
 			Date startStamp = dateParser.parse(startTime);
@@ -64,7 +65,7 @@ public class WorkLog
 			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
-			System.out.printf("Date format is \"%s\".%n", dateStampFormat);
+			System.out.printf("Time format is \"%s\".%n", TIMEFORMAT);
 			e.printStackTrace();
 			return;
 		}
@@ -78,7 +79,7 @@ public class WorkLog
 	 */
 	public void addDateStamps(String startTime, String endTime)
 	{
-		SimpleDateFormat dateParser = new SimpleDateFormat(dateStampFormat);
+		SimpleDateFormat dateParser = new SimpleDateFormat(DATEFORMAT);
 		try {
 			Date startStamp = dateParser.parse(startTime);
 			Date endStamp = dateParser.parse(endTime);
@@ -87,7 +88,7 @@ public class WorkLog
 			
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n", startTime, endTime);
-			System.out.printf("Time format is \"%s\".%n", timeStampFormat);
+			System.out.printf("Date format is \"%s\".%n", DATEFORMAT);
 			e.printStackTrace();
 			return;
 		}
