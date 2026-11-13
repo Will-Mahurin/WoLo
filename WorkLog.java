@@ -4,19 +4,17 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.Locale;
-
-// TODO: Swap from Dates to something else, their support is really weird. Maybe Calendar?
 
 /**
  * Backend (I think that's what this counts as) to WoLo worklogging program.
  * @author Will Mahurin
- * @version indev 26.11.11
+ * @version indev 26.11.12
  */
 public class WorkLog
 {
@@ -64,17 +62,18 @@ public class WorkLog
 	 */
 	public void addToday(String startTime, String endTime)
 	{
-		SimpleDateFormat dateParser = new SimpleDateFormat(TIMEFORMAT);
+		SimpleDateFormat dateParser = new SimpleDateFormat(DATEFORMAT);
 		LocalDate today = LocalDate.now();
-		startTime += today.getDayOfMonth() + today.getMonth().getDisplayName(TextStyle.SHORT, Locale.US) + 
-			today.getYear();
+		startTime += ", " + today.getDayOfMonth() + " " + 
+			today.getMonth().getDisplayName(TextStyle.SHORT, Locale.US) + " " + today.getYear();
+		endTime += ", " + today.getDayOfMonth() + " " + 
+			today.getMonth().getDisplayName(TextStyle.SHORT, Locale.US) + " " + today.getYear();
 		try {
 			// TODO: These dates are on the epoch, set them to the current one.
-			Instant startStamp = dateParser.parse(startTime).toInstant();
-			Instant endStamp = dateParser.parse(endTime).toInstant();
+			ZonedDateTime startStamp = dateParser.parse(startTime).toInstant().atZone(ZoneId.systemDefault() );
+			ZonedDateTime endStamp = dateParser.parse(endTime).toInstant().atZone(ZoneId.systemDefault() );
 			if(endStamp.isBefore(startStamp) ) {
-				System.out.println("I need to learn how to set the date back a day!");
-				//TODO: Learn to set the date back a day.
+				startStamp = startStamp.minus(1, ChronoUnit.DAYS);
 			}
 			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
 			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
@@ -97,11 +96,10 @@ public class WorkLog
 	{
 		SimpleDateFormat dateParser = new SimpleDateFormat(DATEFORMAT);
 		try {
-			Date startStamp = dateParser.parse(startDate);
-			Date endStamp = dateParser.parse(endDate);
-			long duration = endStamp.getTime() - startStamp.getTime();
+			ZonedDateTime startStamp = dateParser.parse(startDate).toInstant().atZone(ZoneId.systemDefault() );
+			ZonedDateTime endStamp = dateParser.parse(endDate).toInstant().atZone(ZoneId.systemDefault() );
+			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
 			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
-			
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
 					startDate, endDate);
