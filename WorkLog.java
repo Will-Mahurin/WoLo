@@ -20,7 +20,7 @@ public class WorkLog
 {
 	// Fields.
 	// File contruct of the log file.
-	private File logFile;
+	private CSVReaderWriter log;
 	// Integer sum of the total time spent working TODO: Duration implementation and units?
 	private int totalDuration; 
 	// Consistent reference formats for times and dates.
@@ -48,9 +48,9 @@ public class WorkLog
 	public WorkLog(String filepath)
 	{
 		// TODO: Learn to read CSV files.
-		logFile = new File(filepath);
-		if(!logFile.exists() ) {
-			createLogCSV(logFile);
+		log = new CSVReaderWriter(filepath);
+		if(!log.getCsvFile().exists() ){
+			log.write("Start time,End time,Duration");
 		}
 	}
 
@@ -76,7 +76,7 @@ public class WorkLog
 				startStamp = startStamp.minus(1, ChronoUnit.DAYS);
 			}
 			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
-			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
+			log.write(startStamp + "," + endStamp + "," + duration);
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
 					startTime, endTime);
@@ -99,7 +99,7 @@ public class WorkLog
 			ZonedDateTime startStamp = dateParser.parse(startDate).toInstant().atZone(ZoneId.systemDefault() );
 			ZonedDateTime endStamp = dateParser.parse(endDate).toInstant().atZone(ZoneId.systemDefault() );
 			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
-			writeToLogCSV(logFile, startStamp + "," + endStamp + "," + duration);
+			log.write(startStamp + "," + endStamp + "," + duration);
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
 					startDate, endDate);
@@ -121,43 +121,7 @@ public class WorkLog
 		// TODO: Figure out how to stop logging indefinite real time.
 	}
 
-	/**
-	 * Internal method to create a log file.
-	 * @param file File to be create created.
-	 */
-	private void createLogCSV(File file)
-	{
-		System.out.printf("File %s does not exist and will be created.%n", file.getName() );
-		try(PrintWriter writer = new PrintWriter(new FileWriter(file) ) ){
-			writer.println("Start time,End time,Duration");
-		} catch(IOException e) {
-			System.out.printf("Failed to write to file: \"%s\".%n", file.getName() );
-			e.printStackTrace();
-		}
-	}
 
-	/**
-	 * Internal method to write to a CSV file.
-	 * @param file File object representing the CSV file that stores the logs.
-	 * @param words String of the value to be written to the file.
-	 */
-	private void writeToLogCSV(File file, String words)
-	{
-		if(!file.exists() ) {
-			System.out.printf("File %s does not exist, create it first.%n", file.getName() );
-			return;
-		}
-		if(!file.canWrite() ) {
-			System.out.printf("File %s is not writable.%n", file.getName() );
-			return;
-		}
-		try(PrintWriter writer = new PrintWriter(new FileWriter(file, true) ) ) { // Need this `true` to append.
-			System.out.printf("This should be appending %s to %s.%n", words, file.getName() );
-			writer.append(words + "\n");
-		} catch(IOException e) {
-			System.out.printf("Failed to write to file: \"%s\".%n", file.getName() );
-		}
-	}
 }
 
 
