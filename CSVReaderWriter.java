@@ -2,6 +2,9 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.List;
 
 public class CSVReaderWriter
 {
@@ -10,25 +13,6 @@ public class CSVReaderWriter
 	public CSVReaderWriter(String filepath)
 	{
 		csvFile = new File(filepath);
-		if(!csvFile.exists() ) {
-			System.out.printf("File %s does not exists and will be created.%n", csvFile.getName() );
-			createCSVFile();
-		}
-	}
-
-
-	/**
-	 * Internal method to create a log file.
-	 */
-	private void createCSVFile()
-	{
-		System.out.printf("File %s does not exist and will be created.%n", csvFile.getName() );
-		try(PrintWriter writer = new PrintWriter(new FileWriter(csvFile) ) ){
-			writer.println("Start time,End time,Duration");
-		} catch(IOException e) {
-			System.out.printf("Failed to write to file: \"%s\".%n", csvFile.getName() );
-			e.printStackTrace();
-		}
 	}
 
 	/**
@@ -44,6 +28,23 @@ public class CSVReaderWriter
 		}
 	}
 
+	/**
+	 * Read all the lines from the CSV file and return them an an array of strings.
+	 * @return An array of Strings holding all lines in the file.
+	 */
+	public String[] readAllLines()
+	{
+		List<String> lines = null;
+		try {
+			lines = Files.readAllLines(Paths.get(csvFile.getName() ) );
+			return lines.toArray(new String[0] );
+		} catch(IOException e) {
+			System.out.printf("Couldn't read %s: %s%n", csvFile.getName(), e);
+			e.printStackTrace();
+			System.out.printf("Returning null.%n");
+			return null;
+		}
+	}
 
 	public File getCsvFile() {
 		return csvFile;

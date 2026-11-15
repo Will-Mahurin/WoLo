@@ -1,7 +1,3 @@
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -69,14 +65,18 @@ public class WorkLog
 		endTime += ", " + today.getDayOfMonth() + " " + 
 			today.getMonth().getDisplayName(TextStyle.SHORT, Locale.US) + " " + today.getYear();
 		try {
-			// TODO: These dates are on the epoch, set them to the current one.
 			ZonedDateTime startStamp = dateParser.parse(startTime).toInstant().atZone(ZoneId.systemDefault() );
 			ZonedDateTime endStamp = dateParser.parse(endTime).toInstant().atZone(ZoneId.systemDefault() );
+
 			if(endStamp.isBefore(startStamp) ) {
 				startStamp = startStamp.minus(1, ChronoUnit.DAYS);
+
 			}
+			
 			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
+
 			log.write(startStamp + "," + endStamp + "," + duration);
+
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
 					startTime, endTime);
