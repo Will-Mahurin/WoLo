@@ -47,7 +47,7 @@ public class WorkLog
 	{
 		log = new CSVReaderWriter(filepath);
 		if(!log.getCsvFile().exists() ){
-			log.write("Start time,End time,Duration");
+			log.writeLine("Start time,End time,Duration");
 		}
 		readLogFile();
 		calculateTotalDuration();
@@ -78,7 +78,7 @@ public class WorkLog
 			
 			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
 
-			log.write(startStamp + "," + endStamp + "," + duration);
+			log.writeLine(startStamp + "," + endStamp + "," + duration);
 
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
@@ -102,7 +102,7 @@ public class WorkLog
 			ZonedDateTime startStamp = dateParser.parse(startDate).toInstant().atZone(ZoneId.systemDefault() );
 			ZonedDateTime endStamp = dateParser.parse(endDate).toInstant().atZone(ZoneId.systemDefault() );
 			long duration = ChronoUnit.MINUTES.between(startStamp, endStamp);
-			log.write(startStamp + "," + endStamp + "," + duration);
+			log.writeLine(startStamp + "," + endStamp + "," + duration);
 		} catch(ParseException e) {
 			System.out.printf("Couldn't parse either startTime \"%s\" or endTime \"%s\".%n",
 					startDate, endDate);

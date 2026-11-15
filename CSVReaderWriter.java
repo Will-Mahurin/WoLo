@@ -19,7 +19,7 @@ public class CSVReaderWriter
 	 * Write a string to the CSV file associated with this writer.
 	 * @param words String of the value to be written to the csvFile.
 	 */
-	public void write(String words)
+	public void writeLine(String words)
 	{
 		try(PrintWriter writer = new PrintWriter(new FileWriter(csvFile, true) ) ) { // Need this `true` to append.
 			writer.append(words + "\n");

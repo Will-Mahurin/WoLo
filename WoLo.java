@@ -1,11 +1,16 @@
+import java.util.Scanner;
+
 public class WoLo {
 	public static void main(String[] args) {
 		if(args.length == 0) {
-			System.out.println("""
-					Usage: WoLo <command> [<args>]""");
+			commandLine();
 			return;
-			//TODO: Start active CLI instead of requiring separate commands for everything.
 		}
+		runCommand(args);
+	}
+
+	private static void runCommand(String[] args)
+	{
 		switch(args[0]) {
 			default -> System.out.println(args[0] + " not recognized."); // This can go first!
 			case "addDateStamps" -> addDateStamps(args);
@@ -14,6 +19,23 @@ public class WoLo {
 			case "end" -> end(args);
 			case "worktime" -> printWorkTime();
 		}
+	}
+
+	private static void commandLine()
+	{
+		//TODO: Read user's command and execute it, accounting for arguments in quotes.
+		//TODO: Print welcome message explaining what to do.
+		Scanner input = new Scanner(System.in);
+		boolean exit = false;
+		while(!exit) {
+			String newCommand = input.nextLine();
+			if(newCommand.toLowerCase().equals("exit") ){
+				exit = true;
+				continue;
+			}
+			System.out.println(newCommand);
+		}
+		input.close();
 	}
 
 	private static void addDateStamps(String[] args)
