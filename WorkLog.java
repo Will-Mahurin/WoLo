@@ -5,6 +5,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.TextStyle;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.Locale;
 
 /**
@@ -18,7 +19,8 @@ public class WorkLog
 	// File contruct of the log file.
 	private CSVReaderWriter log;
 	// Integer sum of the total time spent working TODO: Duration implementation and units?
-	private int totalDuration; 
+	private long totalDuration; 
+	private ArrayList<LogEntry> entries;
 	// Consistent reference formats for times and dates.
 	/**
 	 * Consistent format for input times. Follows "h:m a" e.g. "6:30 pm"
@@ -43,11 +45,12 @@ public class WorkLog
 	 */
 	public WorkLog(String filepath)
 	{
-		// TODO: Learn to read CSV files.
 		log = new CSVReaderWriter(filepath);
 		if(!log.getCsvFile().exists() ){
 			log.write("Start time,End time,Duration");
 		}
+		readLogFile();
+		calculateTotalDuration();
 	}
 
 	/**
@@ -110,6 +113,30 @@ public class WorkLog
 
 	}
 
+	/**
+	 * Read the log file and store all its data in the entries field as LogEntry objects.
+	 */
+	private void readLogFile()
+	{
+		String[] logLines = log.readAllLines();
+		entries = new ArrayList<>();
+		for(int i = 1; i < logLines.length; i++){
+			entries.add(new LogEntry(logLines[i]) );
+		}
+
+	}
+
+	/**
+	 * Calculate the total duration based on the entries field.
+	 */
+	private void calculateTotalDuration()
+	{
+		totalDuration = 0;
+		for(LogEntry entry : entries){
+			totalDuration += entry.getDuration();
+		}
+	}
+
 	public void startTimer()
 	{
 		// TODO: Figure out how to log indefinite real time.
@@ -119,6 +146,11 @@ public class WorkLog
 	public void endTimer()
 	{
 		// TODO: Figure out how to stop logging indefinite real time.
+	}
+
+	public long getTotalDuration()
+	{
+		return totalDuration;
 	}
 
 

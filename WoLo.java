@@ -4,6 +4,7 @@ public class WoLo {
 			System.out.println("""
 					Usage: WoLo <command> [<args>]""");
 			return;
+			//TODO: Start active CLI instead of requiring separate commands for everything.
 		}
 		switch(args[0]) {
 			default -> System.out.println(args[0] + " not recognized."); // This can go first!
@@ -11,6 +12,7 @@ public class WoLo {
 			case "addToday" -> addToday(args);
 			case "start" -> start(args);
 			case "end" -> end(args);
+			case "worktime" -> printWorkTime();
 		}
 	}
 
@@ -44,5 +46,22 @@ public class WoLo {
 	private static void end(String[] args)
 	{
 
+	}
+
+	private static void printWorkTime()
+	{
+		WorkLog logger = new WorkLog();
+		long workTime = logger.getTotalDuration();
+		long hours = workTime / 60;
+		long days = hours / 24;
+		if(days > 0) {
+			System.out.printf("%d days, %d hours, and %d minutes (%d minutes).%n",
+					days, hours % 24, workTime % 60, workTime);
+		} else if(hours > 0) {
+			System.out.printf("%d hours and %d minutes (%d minutes).%n",
+					hours, workTime % 60, workTime);
+		} else {
+			System.out.printf("%d minutes.%n", workTime);
+		}
 	}
 }
